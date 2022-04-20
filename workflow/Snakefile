@@ -1,4 +1,4 @@
-#---- snakebids boilerplate
+#---- begin snakebids boilerplate ----------------------------------------------
 
 import snakebids
 from snakebids import bids
@@ -6,13 +6,26 @@ from snakebids import bids
 configfile: 'config/snakebids.yml'
 
 #writes inputs_config.yml and updates config dict
-snakebids.generate_inputs_config(config)
+config.update(
+    snakebids.generate_inputs(
+        bids_dir=config["bids_dir"],
+        pybids_inputs=config["pybids_inputs"],
+        derivatives=config["derivatives"],
+        participant_label=config["participant_label"],
+        exclude_participant_label=config["exclude_participant_label"]
+    )
+)
+
+
 
 #this adds constraints to the bids naming
-wildcard_constraints:  **snakebids.get_wildcard_constraints(config)
+wildcard_constraints:  **snakebids.get_wildcard_constraints(\
+    config["pybids_inputs"]\
+)
 
-#----
-
+#---- end snakebids boilerplate ------------------------------------------------
+#
+#
 def get_scratch_dir():
     if 'SLURM_TMPDIR' in os.environ:
         return os.environ['SLURM_TMPDIR'] 
